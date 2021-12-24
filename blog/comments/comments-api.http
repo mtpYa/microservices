@@ -1,0 +1,10 @@
+### Get all posts
+
+get('http://localhost:4001/posts/123/comments');
+
+### Create new posts
+
+post(
+  'http://localhost:4001/posts/123/comments',
+  json={ 'content': 'test comment' }
+)
