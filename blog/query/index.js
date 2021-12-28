@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const axios = require('axios');
 
 const app = express();
 const posts = {};
@@ -13,7 +14,27 @@ app.get('/posts', (req, res) => {
 app.post('/events', (req, res) => {
   const { type, data } = req.body;
 
-  switch(type) {
+  eventHandler(type, data);
+
+  res.status(200).json({});
+});
+
+app.listen(4002, async () => {
+  console.log('Listening on port 4002');
+
+  const res = await axios.get('http://localhost:4005/events');
+
+  for(let event of res.data) {
+    const { type, data } = event;
+    console.log(`Processing event: ${type}`);
+    eventHandler(type, data);
+  }
+});
+
+//-------- helpers -------------
+
+function eventHandler(type, data) {
+  switch (type) {
     case 'PostCreated': {
       const { id, title } = data;
 
@@ -27,7 +48,7 @@ app.post('/events', (req, res) => {
       break;
     }
     case 'CommentUpdated': {
-      const { id, postId,content, status } = data;
+      const { id, postId, content, status } = data;
       const comments = posts[postId].comments;
       const comment = comments.find((comment) => comment.id === id);
 
@@ -35,8 +56,4 @@ app.post('/events', (req, res) => {
       comment.content = content;
     }
   }
-
-  res.status(200).json({});
-});
-
-app.listen(4002, () => console.log('Listening on port 4002'));
+}

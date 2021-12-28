@@ -7,7 +7,7 @@ function PostCreate() {
     e.preventDefault();
 
     await axios.post(
-      'http://localhost:4000/posts',
+      'http://localhost:4006/posts',
       { title }
     );
 
